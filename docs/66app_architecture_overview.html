@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>66App — Full Architecture Map</title>
+<style>
+:root{
+--bg:#ffffff;--bg2:#f5f5f0;--bg3:#eeedea;
+--tx:#1a1a1a;--tx2:#6b6b65;--tx3:#9c9a92;
+--bd:#d8d7d2;--bd2:#b4b2a9;
+--blue-bg:#E6F1FB;--blue-tx:#0C447C;--blue-bd:#185FA5;
+--teal-bg:#E1F5EE;--teal-tx:#085041;--teal-bd:#0F6E56;
+--purple-bg:#EEEDFE;--purple-tx:#3C3489;--purple-bd:#534AB7;
+--coral-bg:#FAECE7;--coral-tx:#712B13;--coral-bd:#993C1D;
+--amber-bg:#FAEEDA;--amber-tx:#633806;--amber-bd:#854F0B;
+--green-bg:#EAF3DE;--green-tx:#27500A;--green-bd:#3B6D11;
+--pink-bg:#FBEAF0;--pink-tx:#72243E;--pink-bd:#993556;
+--info-bg:#E6F1FB;--info-tx:#0C447C;--info-bd:#85B7EB;
+--warn-bg:#FAEEDA;--warn-tx:#633806;--warn-bd:#EF9F27;
+--ok-bg:#EAF3DE;--ok-tx:#27500A;--ok-bd:#97C459;
+--radius:8px;--radius-lg:12px
+}
+@media(prefers-color-scheme:dark){:root{
+--bg:#1a1a1a;--bg2:#2c2c2a;--bg3:#3d3d3a;
+--tx:#e8e6df;--tx2:#9c9a92;--tx3:#73726c;
+--bd:#444441;--bd2:#5f5e5a;
+--blue-bg:#042C53;--blue-tx:#B5D4F4;--blue-bd:#85B7EB;
+--teal-bg:#04342C;--teal-tx:#9FE1CB;--teal-bd:#5DCAA5;
+--purple-bg:#26215C;--purple-tx:#CECBF6;--purple-bd:#AFA9EC;
+--coral-bg:#4A1B0C;--coral-tx:#F5C4B3;--coral-bd:#F0997B;
+--amber-bg:#412402;--amber-tx:#FAC775;--amber-bd:#EF9F27;
+--green-bg:#173404;--green-tx:#C0DD97;--green-bd:#97C459;
+--pink-bg:#4B1528;--pink-tx:#F4C0D1;--pink-bd:#ED93B1;
+--info-bg:#042C53;--info-tx:#B5D4F4;--info-bd:#85B7EB;
+--warn-bg:#412402;--warn-tx:#FAC775;--warn-bd:#EF9F27;
+--ok-bg:#173404;--ok-tx:#C0DD97;--ok-bd:#97C459
+}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);padding:2rem;display:flex;justify-content:center}
+.wrap{max-width:720px;width:100%}
+h1{font-size:18px;font-weight:500;margin:0 0 .5rem}
+.subtitle{font-size:13px;color:var(--tx2);margin:0 0 1.5rem}
+.node{position:relative;border-radius:var(--radius-lg);border:1px solid var(--bd);overflow:hidden;margin:0 0 4px;transition:border-color .2s}
+.node.open{border-color:var(--bd2)}
+.nh{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;user-select:none;transition:background .12s}
+.nh:hover{background:var(--bg2)}
+.nh .ic{width:36px;height:36px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0}
+.nh .ti{font-size:14px;font-weight:500}
+.nh .su{font-size:12px;color:var(--tx2)}
+.nh .ar{font-size:10px;color:var(--tx3);margin-left:auto;transition:transform .2s;flex-shrink:0}
+.node.open>.nh .ar{transform:rotate(90deg)}
+.nb{display:none;padding:2px 14px 14px}
+.node.open>.nb{display:block}
+.sg{margin:8px 0 0}
+.sg-t{font-size:11px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin:0 0 6px}
+.pills{display:flex;flex-wrap:wrap;gap:4px}
+.pill{font-size:11px;padding:3px 8px;border-radius:var(--radius);background:var(--bg2);color:var(--tx2)}
+.pill.hi{border:1px solid var(--info-bd);color:var(--info-tx);background:var(--info-bg)}
+.kv{width:100%;font-size:12px;border-collapse:collapse}
+.kv td{padding:3px 0;vertical-align:top;color:var(--tx2)}
+.kv td:first-child{font-weight:500;color:var(--tx);width:40%;padding-right:12px}
+.conn{display:flex;align-items:center;justify-content:center;padding:0 0 2px;position:relative;height:20px}
+.conn::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:0;border-left:1px dashed var(--bd)}
+.conn .dot{width:6px;height:6px;border-radius:50%;background:var(--bd2);position:relative;z-index:1}
+.row{display:grid;gap:4px;margin:0 0 4px}
+.row2{grid-template-columns:1fr 1fr}
+.row4{grid-template-columns:1fr 1fr 1fr 1fr}
+.db-g{margin:6px 0 0;padding:8px 10px;border-radius:var(--radius);background:var(--bg2)}
+.db-g .db-t{font-size:12px;font-weight:500;margin:0 0 4px}
+.db-g .db-r{font-size:11px;color:var(--tx3);line-height:1.6;margin:4px 0 0}
+.mini{font-size:11px;color:var(--tx3);margin:6px 0 0;line-height:1.5}
+.flow-row{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin:4px 0}
+.flow-step{font-size:11px;padding:3px 8px;border-radius:var(--radius);border:1px solid var(--bd);color:var(--tx2)}
+.flow-arr{color:var(--tx3);font-size:10px}
+.flow-step.info{border-color:var(--info-bd);color:var(--info-tx)}
+.flow-step.warn{border-color:var(--warn-bd);color:var(--warn-tx)}
+@media(max-width:600px){.row4{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>66App — Full architecture map</h1>
+<p class="subtitle">Click any layer to expand. Every module, table, and pattern from the stack.</p>
+
+<div class="node open" onclick="tog(this)">
+<div class="nh">
+<div class="ic" style="background:var(--blue-bg);color:var(--blue-tx)">FL</div>
+<div><div class="ti">Flutter 3.24 — Frontend</div><div class="su">Riverpod · GoRouter · Dio · PASETO</div></div>
+<span class="ar">&#9654;</span>
+</div>
+<div class="nb">
+<div class="sg"><div class="sg-t">11 feature modules</div>
+<div class="pills"><span class="pill hi">auth</span><span class="pill hi">feed</span><span class="pill hi">posts</span><span class="pill hi">profile</span><span class="pill hi">social</span><span class="pill hi">search</span><span class="pill hi">shorts</span><span class="pill hi">notifications</span><span class="pill hi">settings</span><span class="pill hi">affiliate</span><span class="pill hi">media</span></div></div>
+<div class="sg"><div class="sg-t">Module pattern (each feature)</div>
+<table class="kv"><tr><td>data/</td><td>Repository + models (.fromJson)</td></tr><tr><td>providers/</td><td>Riverpod notifiers + state</td></tr><tr><td>presentation/</td><td>Screens + widgets</td></tr></table></div>
+<div class="sg"><div class="sg-t">5-tab navigation</div>
+<div class="flow-row"><span class="flow-step">Home</span><span class="flow-step">Shorts</span><span class="flow-step">Create</span><span class="flow-step">Search</span><span class="flow-step">Profile</span></div></div>
+<div class="sg"><div class="sg-t">Shared infrastructure</div>
+<table class="kv"><tr><td>core/config</td><td>Dio client, theme, environment</td></tr><tr><td>core/providers</td><td>Global providers (dio, auth, storage)</td></tr><tr><td>core/utils</td><td>Formatters, validators</td></tr><tr><td>routing/</td><td>GoRouter config + route constants</td></tr><tr><td>shared/</td><td>Reusable models, widgets, services</td></tr><tr><td>l10n/</td><td>English + Thai localization</td></tr></table></div>
+<div class="sg"><div class="sg-t">HTTP request flow</div>
+<div class="flow-row"><span class="flow-step">Tap</span><span class="flow-arr">&#8594;</span><span class="flow-step">Notifier</span><span class="flow-arr">&#8594;</span><span class="flow-step">Repository</span><span class="flow-arr">&#8594;</span><span class="flow-step">Dio</span><span class="flow-arr">&#8594;</span><span class="flow-step">Auth header</span><span class="flow-arr">&#8594;</span><span class="flow-step">Idempotency key</span><span class="flow-arr">&#8594;</span><span class="flow-step">HTTP</span></div></div>
+</div>
+</div>
+
+<div class="conn"><span class="dot"></span></div>
+
+<div class="node" onclick="tog(this)">
+<div class="nh">
+<div class="ic" style="background:var(--bg2);color:var(--tx2)">MW</div>
+<div><div class="ti">Middleware chain</div><div class="su">6 layers applied in order on every request</div></div>
+<span class="ar">&#9654;</span>
+</div>
+<div class="nb">
+<div class="sg"><div class="sg-t">Request pipeline (in order)</div>
+<div class="flow-row"><span class="flow-step">Logging</span><span class="flow-arr">&#8594;</span><span class="flow-step">Recovery</span><span class="flow-arr">&#8594;</span><span class="flow-step">CORS</span><span class="flow-arr">&#8594;</span><span class="flow-step">Rate limit</span><span class="flow-arr">&#8594;</span><span class="flow-step">Auth</span><span class="flow-arr">&#8594;</span><span class="flow-step">Idempotency</span></div></div>
+<div class="sg"><table class="kv"><tr><td>Logging</td><td>Structured JSON output</td></tr><tr><td>Recovery</td><td>Panic &#8594; 500 (no crash)</td></tr><tr><td>CORS</td><td>Cross-origin headers</td></tr><tr><td>Rate limiting</td><td>Redis-backed counters per user/IP</td></tr><tr><td>Auth</td><td>PASETO token &#8594; user context</td></tr><tr><td>Idempotency</td><td>Dedup POST/PATCH/DELETE by UUID key</td></tr></table></div>
+</div>
+</div>
+
+<div class="conn"><span class="dot"></span></div>
+
+<div class="node" onclick="tog(this)">
+<div class="nh">
+<div class="ic" style="background:var(--teal-bg);color:var(--teal-tx)">Go</div>
+<div><div class="ti">Go 1.24 — API server + business logic</div><div class="su">Chi router · sqlc · 12 modules · /api/v1</div></div>
+<span class="ar">&#9654;</span>
+</div>
+<div class="nb">
+<div class="sg"><div class="sg-t">12 backend modules (handler.go + service.go each)</div>
+<div class="pills"><span class="pill hi">auth</span><span class="pill hi">users</span><span class="pill hi">posts</span><span class="pill hi">feed</span><span class="pill hi">follows</span><span class="pill hi">likes</span><span class="pill hi">comments</span><span class="pill hi">notifications</span><span class="pill hi">affiliate</span><span class="pill hi">media</span><span class="pill hi">admin</span><span class="pill hi">reports</span></div></div>
+<div class="sg"><div class="sg-t">Domain validation rules</div>
+<table class="kv"><tr><td>Caption</td><td>Max 2200 chars</td></tr><tr><td>Comment</td><td>Max 1000 chars</td></tr><tr><td>Bio</td><td>Max 500 chars</td></tr></table></div>
+<div class="sg"><div class="sg-t">Architecture patterns</div>
+<table class="kv"><tr><td>Outbox pattern</td><td>Events in same DB tx as mutations, worker publishes async</td></tr><tr><td>Affiliate signing</td><td>HMAC with versioned keys + rotation</td></tr><tr><td>Soft deletes</td><td>Users + posts marked deleted, never removed</td></tr><tr><td>Denormalized counters</td><td>like_count via DB trigger, hashtag counts via queries</td></tr></table></div>
+<div class="sg"><div class="sg-t">Response envelope (every endpoint)</div>
+<table class="kv"><tr><td>data</td><td>Payload object</td></tr><tr><td>meta</td><td>{ cursor, has_more } — cursor-based pagination</td></tr><tr><td>error</td><td>{ code, message, details }</td></tr></table></div>
+<div class="sg"><div class="sg-t">14 SQL query files (sqlc &#8594; 20 model structs)</div>
+<div class="pills"><span class="pill">users.sql</span><span class="pill">auth.sql</span><span class="pill">posts.sql</span><span class="pill">feed.sql</span><span class="pill">engagement.sql</span><span class="pill">follows.sql</span><span class="pill">hashtags.sql</span><span class="pill">affiliate.sql</span><span class="pill">notifications.sql</span><span class="pill">post_media.sql</span><span class="pill">reports.sql</span><span class="pill">admin.sql</span><span class="pill">outbox.sql</span><span class="pill">idempotency.sql</span></div></div>
+</div>
+</div>
+
+<div class="conn"><span class="dot"></span></div>
+
+<div class="row row4">
+<div class="node" onclick="tog(this)">
+<div class="nh" style="padding:8px 10px">
+<div class="ic" style="background:var(--purple-bg);color:var(--purple-tx);width:28px;height:28px;font-size:11px">PG</div>
+<div><div class="ti" style="font-size:13px">PostgreSQL</div><div class="su" style="font-size:11px">26 migrations</div></div>
+<span class="ar">&#9654;</span>
+</div>
+<div class="nb">
+<div class="db-g"><div class="db-t">User domain</div><div class="pills"><span class="pill">users</span><span class="pill">user_profiles</span><span class="pill">user_oauth_identities</span><span class="pill">sessions</span><span class="pill">follows</span></div><div class="db-r">1:1 profiles (handle, avatar, bio) · 1:N oauth (Google, Apple, LINE) · 1:N sessions (SHA-256) · N:N follows (no self)</div></div>
+<div class="db-g"><div class="db-t">Content domain</div><div class="pills"><span class="pill">posts</span><span class="pill">post_media</span><span class="pill">post_hashtags</span><span class="pill">hashtags</span><span class="pill">likes</span><span class="pill">comments</span><span class="pill">saved_posts</span></div><div class="db-r">1:N media (cascade) · N:N hashtags · N:N likes (triggers count) · 1:N comments (nested parent_id) · N:N saved</div></div>
+<div class="db-g"><div class="db-t">Affiliate domain</div><div class="pills"><span class="pill">affiliate_links</span><span class="pill">click_events</span><span class="pill">conversions</span><span class="pill">hmac_keys</span></div></div>
+<div class="db-g"><div class="db-t">System tables</div><div class="pills"><span class="pill">notifications</span><span class="pill">reports</span><span class="pill">idempotency_keys</span><span class="pill">outbox_events</span><span class="pill">outbox_events_dlq</span><span class="pill">audit_log</span><span class="pill">upload_sessions</span></div></div>
+<div class="sg"><div class="sg-t" style="margin-top:8px">DB patterns</div>
+<table class="kv"><tr><td>Pagination</td><td>Cursor-based</td></tr><tr><td>Soft deletes</td><td>status/deleted_at</td></tr><tr><td>Indexes</td><td>Partial (active, unpublished)</td></tr><tr><td>Idempotent</td><td>ON CONFLICT DO NOTHING</td></tr></table></div>
+</div>
+</div>
+
+<div class="node" onclick="tog(this)">
+<div class="nh" style="padding:8px 10px">
+<div class="ic" style="background:var(--coral-bg);color:var(--coral-tx);width:28px;height:28px;font-size:11px">RD</div>
+<div><div class="ti" style="font-size:13px">Redis 7</div><div class="su" style="font-size:11px">Cache + rates</div></div>
+<span class="ar">&#9654;</span>
+</div>
+<div class="nb">
+<table class="kv"><tr><td>Feed cache</td><td>Home + explore, TTL</td></tr><tr><td>Sessions</td><td>Active state</td></tr><tr><td>Rate limits</td><td>Per user/IP counters</td></tr><tr><td>General</td><td>Get/Set/Del/GetJSON</td></tr></table>
+<div class="mini">go-redis/v9 · backend/internal/cache/</div>
+</div>
+</div>
+
+<div class="node" onclick="tog(this)">
+<div class="nh" style="padding:8px 10px">
+<div class="ic" style="background:var(--amber-bg);color:var(--amber-tx);width:28px;height:28px;font-size:11px">S3</div>
+<div><div class="ti" style="font-size:13px">MinIO / S3</div><div class="su" style="font-size:11px">Media storage</div></div>
+<span class="ar">&#9654;</span>
+</div>
+<div class="nb">
+<div class="sg"><div class="sg-t">Stored media</div><div class="pills"><span class="pill">Post images</span><span class="pill">Post videos</span><span class="pill">Avatars</span></div></div>
+<div class="sg"><div class="sg-t">Upload flow</div>
+<div class="flow-row"><span class="flow-step">Presign URL</span><span class="flow-arr">&#8594;</span><span class="flow-step">Session</span><span class="flow-arr">&#8594;</span><span class="flow-step">Direct upload</span><span class="flow-arr">&#8594;</span><span class="flow-step">Confirm</span><span class="flow-arr">&#8594;</span><span class="flow-step">Attach</span></div></div>
+<div class="mini">AWS SDK v2 · Bucket: media (public read) · Expired sessions auto-cleaned</div>
+</div>
+</div>
+
+<div class="node" onclick="tog(this)">
+<div class="nh" style="padding:8px 10px">
+<div class="ic" style="background:var(--green-bg);color:var(--green-tx);width:28px;height:28px;font-size:11px">MS</div>
+<div><div class="ti" style="font-size:13px">Meilisearch</div><div class="su" style="font-size:11px">Full-text search</div></div>
+<span class="ar">&#9654;</span>
+</div>
+<div class="nb">
+<div class="sg"><div class="sg-t">Search targets</div><div class="pills"><span class="pill">Posts</span><span class="pill">Hashtags</span><span class="pill">Users</span></div></div>
+<div class="mini">Port 7700 · Updated async via outbox worker on post.created</div>
+</div>
+</div>
+</div>
+
+<div class="conn"><span class="dot"></span></div>
+
+<div class="row row2">
+<div class="node" onclick="tog(this)">
+<div class="nh" style="padding:8px 10px">
+<div class="ic" style="background:var(--bg2);color:var(--tx2);width:28px;height:28px;font-size:11px">IP</div>
+<div><div class="ti" style="font-size:13px">imgproxy — Media CDN</div><div class="su" style="font-size:11px">On-the-fly transforms</div></div>
+<span class="ar">&#9654;</span>
+</div>
+<div class="nb">
+<table class="kv"><tr><td>thumb</td><td>300x300 — Grids, thumbnails</td></tr><tr><td>feed</td><td>1080x1350 — Feed display</td></tr><tr><td>avatar</td><td>200x200 — Profile pics</td></tr></table>
+<div class="mini">Port 8081 · Reads from MinIO · Strips metadata + color profiles</div>
+</div>
+</div>
+
+<div class="node" onclick="tog(this)">
+<div class="nh" style="padding:8px 10px">
+<div class="ic" style="background:var(--bg2);color:var(--tx2);width:28px;height:28px;font-size:11px">DC</div>
+<div><div class="ti" style="font-size:13px">Docker Compose</div><div class="su" style="font-size:11px">Dev container orchestration</div></div>
+<span class="ar">&#9654;</span>
+</div>
+<div class="nb">
+<table class="kv"><tr><td>PostgreSQL</td><td>:5432</td></tr><tr><td>Redis 7</td><td>:6379</td></tr><tr><td>MinIO</td><td>:9000</td></tr><tr><td>Meilisearch</td><td>:7700</td></tr><tr><td>imgproxy</td><td>:8081</td></tr></table>
+<div class="mini">Go API runs on host via `make dev` and connects to these</div>
+</div>
+</div>
+</div>
+
+<div class="conn"><span class="dot"></span></div>
+
+<div class="row row2">
+<div class="node" onclick="tog(this)">
+<div class="nh" style="padding:8px 10px">
+<div class="ic" style="background:var(--pink-bg);color:var(--pink-tx);width:28px;height:28px;font-size:11px">SC</div>
+<div><div class="ti" style="font-size:13px">Security</div><div class="su" style="font-size:11px">7 mechanisms</div></div>
+<span class="ar">&#9654;</span>
+</div>
+<div class="nb">
+<table class="kv"><tr><td>Auth</td><td>PASETO tokens (not JWT)</td></tr><tr><td>OAuth</td><td>Google, Apple, LINE</td></tr><tr><td>Token store</td><td>SHA-256 hashed refresh tokens</td></tr><tr><td>Dedup</td><td>Idempotency keys on mutations</td></tr><tr><td>Affiliates</td><td>HMAC-signed, versioned rotation</td></tr><tr><td>Click tracking</td><td>IP + UA hashed (no raw PII)</td></tr><tr><td>Dev mode</td><td>Bearer dev.userId.role.status</td></tr></table>
+</div>
+</div>
+
+<div class="node" onclick="tog(this)">
+<div class="nh" style="padding:8px 10px">
+<div class="ic" style="background:var(--teal-bg);color:var(--teal-tx);width:28px;height:28px;font-size:11px">RL</div>
+<div><div class="ti" style="font-size:13px">Reliability</div><div class="su" style="font-size:11px">5 patterns</div></div>
+<span class="ar">&#9654;</span>
+</div>
+<div class="nb">
+<table class="kv"><tr><td>Outbox</td><td>Same-tx events &#8594; worker &#8594; retry &#8594; DLQ</td></tr><tr><td>Idempotency</td><td>UUID key &#8594; cached replay</td></tr><tr><td>Pagination</td><td>Cursor-based (no skip/dup)</td></tr><tr><td>Cascades</td><td>post &#8594; post_media at DB level</td></tr><tr><td>Soft deletes</td><td>Preserves referential integrity</td></tr></table>
+</div>
+</div>
+</div>
+
+<div class="conn"><span class="dot"></span></div>
+
+<div class="node" onclick="tog(this)">
+<div class="nh">
+<div class="ic" style="background:var(--ok-bg);color:var(--ok-tx)">E2E</div>
+<div><div class="ti">End-to-end: "User creates a post"</div><div class="su">Full trace through all 13 steps</div></div>
+<span class="ar">&#9654;</span>
+</div>
+<div class="nb">
+<div class="sg">
+<div class="flow-row"><span class="flow-step info">1. User taps Post</span><span class="flow-arr">&#8594;</span><span class="flow-step info">2. PostNotifier</span><span class="flow-arr">&#8594;</span><span class="flow-step info">3. Dio + headers</span></div>
+<div class="flow-row"><span class="flow-arr">&#8595;</span></div>
+<div class="flow-row"><span class="flow-step">4. POST /api/v1/posts</span><span class="flow-arr">&#8594;</span><span class="flow-step">5. Middleware chain</span><span class="flow-arr">&#8594;</span><span class="flow-step">6. Handler parses</span><span class="flow-arr">&#8594;</span><span class="flow-step">7. Service validates</span></div>
+<div class="flow-row"><span class="flow-arr">&#8595;</span></div>
+<div class="db-g" style="margin:4px 0"><div class="db-t">8. DB transaction (atomic)</div><div class="flow-row" style="margin:2px 0"><span class="flow-step">INSERT posts</span><span class="flow-step">INSERT post_media</span><span class="flow-step">INSERT post_hashtags</span><span class="flow-step">INSERT outbox_events</span></div></div>
+<div class="flow-row"><span class="flow-arr">&#8595;</span></div>
+<div class="flow-row"><span class="flow-step info">9. JSON response</span><span class="flow-arr">&#8594;</span><span class="flow-step info">10. fromJson()</span><span class="flow-arr">&#8594;</span><span class="flow-step info">11. State update</span><span class="flow-arr">&#8594;</span><span class="flow-step info">12. UI rebuilds</span></div>
+<div class="flow-row"><span class="flow-arr">&#8595;</span></div>
+<div class="flow-row"><span class="flow-step warn">13. Outbox worker</span><span class="flow-arr">&#8594;</span><span class="flow-step warn">Notify followers</span><span class="flow-arr">&#8594;</span><span class="flow-step warn">Update search index</span></div>
+</div>
+</div>
+</div>
+
+</div>
+<script>function tog(el){el.classList.toggle('open')}</script>
+</body>
+</html>
