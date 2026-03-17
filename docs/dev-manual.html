@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>66App — Dev Manual</title>
+<style>
+:root{
+--bg:#ffffff;--bg2:#f5f5f0;--bg3:#eeedea;
+--tx:#1a1a1a;--tx2:#6b6b65;--tx3:#9c9a92;
+--bd:#d8d7d2;--bd2:#b4b2a9;
+--blue-bg:#E6F1FB;--blue-tx:#0C447C;--blue-bd:#185FA5;
+--teal-bg:#E1F5EE;--teal-tx:#085041;--teal-bd:#0F6E56;
+--purple-bg:#EEEDFE;--purple-tx:#3C3489;--purple-bd:#534AB7;
+--coral-bg:#FAECE7;--coral-tx:#712B13;--coral-bd:#993C1D;
+--amber-bg:#FAEEDA;--amber-tx:#633806;--amber-bd:#854F0B;
+--green-bg:#EAF3DE;--green-tx:#27500A;--green-bd:#3B6D11;
+--pink-bg:#FBEAF0;--pink-tx:#72243E;--pink-bd:#993556;
+--info-bg:#E6F1FB;--info-tx:#0C447C;--info-bd:#85B7EB;
+--warn-bg:#FAEEDA;--warn-tx:#633806;--warn-bd:#EF9F27;
+--ok-bg:#EAF3DE;--ok-tx:#27500A;--ok-bd:#97C459;
+--radius:8px;--radius-lg:12px;
+--sidebar-w:260px
+}
+@media(prefers-color-scheme:dark){:root{
+--bg:#1a1a1a;--bg2:#2c2c2a;--bg3:#3d3d3a;
+--tx:#e8e6df;--tx2:#9c9a92;--tx3:#73726c;
+--bd:#444441;--bd2:#5f5e5a;
+--blue-bg:#042C53;--blue-tx:#B5D4F4;--blue-bd:#85B7EB;
+--teal-bg:#04342C;--teal-tx:#9FE1CB;--teal-bd:#5DCAA5;
+--purple-bg:#26215C;--purple-tx:#CECBF6;--purple-bd:#AFA9EC;
+--coral-bg:#4A1B0C;--coral-tx:#F5C4B3;--coral-bd:#F0997B;
+--amber-bg:#412402;--amber-tx:#FAC775;--amber-bd:#EF9F27;
+--green-bg:#173404;--green-tx:#C0DD97;--green-bd:#97C459;
+--pink-bg:#4B1528;--pink-tx:#F4C0D1;--pink-bd:#ED93B1;
+--info-bg:#042C53;--info-tx:#B5D4F4;--info-bd:#85B7EB;
+--warn-bg:#412402;--warn-tx:#FAC775;--warn-bd:#EF9F27;
+--ok-bg:#173404;--ok-tx:#C0DD97;--ok-bd:#97C459
+}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);line-height:1.6}
+
+/* ── Sidebar ── */
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--bg2);border-right:1px solid var(--bd);overflow-y:auto;padding:20px 0;z-index:100;transition:transform .25s ease}
+.sidebar-brand{padding:0 20px 16px;font-size:15px;font-weight:600;color:var(--tx);border-bottom:1px solid var(--bd)}
+.sidebar-brand span{color:var(--blue-tx);font-weight:700}
+.nav-group{padding:12px 0 0}
+.nav-group-title{font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;padding:0 20px 6px;cursor:pointer;user-select:none;display:flex;align-items:center;gap:6px}
+.nav-group-title::before{content:'';display:inline-block;width:0;height:0;border-left:4px solid var(--tx3);border-top:3px solid transparent;border-bottom:3px solid transparent;transition:transform .2s}
+.nav-group.open .nav-group-title::before{transform:rotate(90deg)}
+.nav-group-items{display:none;padding:0 0 4px}
+.nav-group.open .nav-group-items{display:block}
+.nav-link{display:block;font-size:13px;color:var(--tx2);text-decoration:none;padding:4px 20px 4px 28px;transition:all .12s}
+.nav-link:hover{color:var(--tx);background:var(--bg3)}
+.nav-link.active{color:var(--blue-tx);font-weight:500;border-right:2px solid var(--blue-bd)}
+
+/* ── Main ── */
+.main{margin-left:var(--sidebar-w);padding:32px 40px 80px;max-width:calc(var(--sidebar-w) + 860px + 80px)}
+.main-inner{max-width:860px}
+
+/* ── Hamburger (mobile) ── */
+.hamburger{display:none;position:fixed;top:12px;left:12px;z-index:200;width:40px;height:40px;border-radius:var(--radius);background:var(--bg2);border:1px solid var(--bd);cursor:pointer;align-items:center;justify-content:center}
+.hamburger svg{width:20px;height:20px;stroke:var(--tx);fill:none;stroke-width:2;stroke-linecap:round}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .overlay.open{display:block}
+  .hamburger{display:flex}
+  .main{margin-left:0;padding:60px 20px 80px}
+}
+
+/* ── Typography ── */
+h1{font-size:24px;font-weight:600;margin:0 0 8px}
+.subtitle{font-size:14px;color:var(--tx2);margin:0 0 32px}
+h2{font-size:20px;font-weight:600;margin:48px 0 16px;padding-top:16px;border-top:1px solid var(--bd)}
+h3{font-size:16px;font-weight:600;margin:28px 0 12px}
+h4{font-size:14px;font-weight:600;margin:20px 0 8px}
+p{margin:0 0 12px;font-size:14px}
+ul,ol{margin:0 0 12px;padding-left:24px;font-size:14px}
+li{margin:0 0 4px}
+
+/* ── Tables ── */
+table{width:100%;border-collapse:collapse;margin:0 0 16px;font-size:13px}
+th{text-align:left;font-weight:600;padding:8px 12px;border-bottom:2px solid var(--bd);color:var(--tx);background:var(--bg2)}
+td{padding:8px 12px;border-bottom:1px solid var(--bd);color:var(--tx2);vertical-align:top}
+tr:hover td{background:var(--bg2)}
+
+/* ── Code ── */
+code{font-family:"SF Mono",Monaco,Consolas,monospace;font-size:12px;background:var(--bg2);border:1px solid var(--bd);border-radius:4px;padding:1px 5px}
+pre{position:relative;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--radius);padding:14px 16px;margin:0 0 16px;overflow-x:auto;font-size:13px;line-height:1.5}
+pre code{background:none;border:none;padding:0;font-size:inherit}
+.copy-btn{position:absolute;top:8px;right:8px;font-size:11px;padding:3px 8px;border-radius:4px;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);cursor:pointer;opacity:0;transition:opacity .15s}
+pre:hover .copy-btn{opacity:1}
+.copy-btn:hover{background:var(--bg3);color:var(--tx)}
+.copy-btn.copied{color:var(--ok-tx);border-color:var(--ok-bd)}
+
+/* ── Callout boxes ── */
+.callout{border-radius:var(--radius);padding:12px 16px;margin:0 0 16px;font-size:13px;line-height:1.5}
+.callout-title{font-weight:600;margin:0 0 4px;font-size:13px}
+.callout.info{background:var(--info-bg);color:var(--info-tx);border:1px solid var(--info-bd)}
+.callout.warn{background:var(--warn-bg);color:var(--warn-tx);border:1px solid var(--warn-bd)}
+.callout.ok{background:var(--ok-bg);color:var(--ok-tx);border:1px solid var(--ok-bd)}
+
+/* ── Status badges ── */
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:999px}
+.badge-ok{background:var(--ok-bg);color:var(--ok-tx);border:1px solid var(--ok-bd)}
+.badge-warn{background:var(--warn-bg);color:var(--warn-tx);border:1px solid var(--warn-bd)}
+.badge-stub{background:var(--coral-bg);color:var(--coral-tx);border:1px solid var(--coral-bd)}
+.badge-partial{background:var(--purple-bg);color:var(--purple-tx);border:1px solid var(--purple-bd)}
+
+/* ── Back to top ── */
+.back-to-top{position:fixed;bottom:24px;right:24px;width:40px;height:40px;border-radius:50%;background:var(--blue-bg);color:var(--blue-tx);border:1px solid var(--blue-bd);cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50;font-size:18px}
+.back-to-top.visible{opacity:1;pointer-events:auto}
+.back-to-top:hover{background:var(--blue-bd);color:#fff}
+</style>
+</head>
+<body>
+
+<!-- Hamburger -->
+<button class="hamburger" id="hamburger" aria-label="Toggle navigation">
+<svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay"></div>
+
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+<div class="sidebar-brand"><span>66</span>App Dev Manual</div>
+
+<div class="nav-group open">
+<div class="nav-group-title">Getting Started</div>
+<div class="nav-group-items">
+<a class="nav-link" href="#overview">Overview</a>
+<a class="nav-link" href="#qa-dev-tools">QA / Dev Tools</a>
+<a class="nav-link" href="#authentication">Authentication</a>
+</div>
+</div>
+
+<div class="nav-group open">
+<div class="nav-group-title">Core Screens</div>
+<div class="nav-group-items">
+<a class="nav-link" href="#home-feed">Home Feed</a>
+<a class="nav-link" href="#explore">Explore</a>
+<a class="nav-link" href="#post-detail">Post Detail</a>
+<a class="nav-link" href="#comments">Comments</a>
+<a class="nav-link" href="#create-post">Create Post</a>
+</div>
+</div>
+
+<div class="nav-group open">
+<div class="nav-group-title">Features</div>
+<div class="nav-group-items">
+<a class="nav-link" href="#affiliate-links">Affiliate Links</a>
+<a class="nav-link" href="#profile">Profile</a>
+<a class="nav-link" href="#gamification">Gamification</a>
+<a class="nav-link" href="#settings">Settings</a>
+<a class="nav-link" href="#reporting">Reporting</a>
+</div>
+</div>
+
+<div class="nav-group open">
+<div class="nav-group-title">Reference</div>
+<div class="nav-group-items">
+<a class="nav-link" href="#placeholder-screens">Placeholder Screens</a>
+<a class="nav-link" href="#api-quick-reference">API Quick Reference</a>
+</div>
+</div>
+</nav>
+
+<!-- Main -->
+<div class="main">
+<div class="main-inner">
+
+<h1>66App Dev Manual</h1>
+<p class="subtitle">V0 — Internal / QA Reference</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="overview">1. Overview</h2>
+
+<p>66App is a fashion-focused social commerce platform. Users browse outfit posts, follow creators, and shop affiliate-linked products — all within a single mobile experience.</p>
+
+<h3>Bottom Navigation</h3>
+<table>
+<tr><th>Tab</th><th>Icon</th><th>Route</th><th>Description</th></tr>
+<tr><td>Home</td><td><code>home</code></td><td><code>/</code></td><td>Chronological feed of followed users' posts</td></tr>
+<tr><td>Shorts</td><td><code>play_circle</code></td><td><code>/shorts</code></td><td>Short-form video (placeholder)</td></tr>
+<tr><td>Create</td><td><code>add_circle</code></td><td><code>/create</code></td><td>Full-screen create-post flow (pushes, no tab)</td></tr>
+<tr><td>Explore</td><td><code>explore</code></td><td><code>/search</code></td><td>Trending 2-column grid of all posts</td></tr>
+<tr><td>Profile</td><td><code>person</code></td><td><code>/profile</code></td><td>Own profile with stats, gamification, post grid</td></tr>
+</table>
+
+<h3>User Roles</h3>
+<table>
+<tr><th>Role</th><th>Description</th></tr>
+<tr><td><code>user</code></td><td>Default role. Can browse, like, comment, save posts</td></tr>
+<tr><td><code>creator</code></td><td>Can add affiliate links to own posts, access Creator Analytics</td></tr>
+<tr><td><code>admin</code></td><td>Can manage reports, remove posts, ban users</td></tr>
+</table>
+
+<h3>Auth Guard</h3>
+<p>All routes except <code>/login</code> require authentication. If a user is not logged in, they are automatically redirected to the login screen. If a logged-in user tries to visit <code>/login</code>, they are redirected to the home feed.</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="qa-dev-tools">2. QA / Dev Tools</h2>
+
+<div class="callout warn">
+<div class="callout-title">DEV_MODE Required</div>
+The backend must be started with <code>DEV_MODE=true</code> for dev tokens to work.
+</div>
+
+<h3>Dev Token Format</h3>
+<pre><code>Bearer dev.&lt;user_id&gt;.&lt;role&gt;.&lt;status&gt;</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+
+<p><strong>Examples:</strong></p>
+<pre><code>Bearer dev.550e8400-e29b-41d4-a716-446655440000.user.active
+Bearer dev.550e8400-e29b-41d4-a716-446655440000.creator.active
+Bearer dev.550e8400-e29b-41d4-a716-446655440000.admin.active</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+
+<ul>
+<li><strong>user_id</strong> — any valid UUID (use the same UUID consistently to test as one user)</li>
+<li><strong>role</strong> — one of: <code>user</code>, <code>creator</code>, <code>admin</code></li>
+<li><strong>status</strong> — one of: <code>active</code>, <code>suspended</code>, <code>deleted</code></li>
+</ul>
+
+<h3>Token Details</h3>
+<ul>
+<li><strong>Format:</strong> PASETO v4 (symmetric encryption, not JWT)</li>
+<li><strong>Access token TTL:</strong> 15 minutes</li>
+<li><strong>Refresh token TTL:</strong> 30 days</li>
+<li>Refresh tokens are stored as SHA-256 hashes in the <code>sessions</code> table</li>
+</ul>
+
+<h3>Running the Dev Environment</h3>
+<pre><code>make dev              # docker compose up + API server (port 8080)
+make test             # go test -race ./internal/...
+make lint             # go vet + golangci-lint
+make flutter-analyze  # flutter pub get + analyze</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="authentication">3. Authentication</h2>
+
+<p><strong>Route:</strong> <code>/login</code> — Full-screen (no bottom nav)</p>
+
+<h3>Login Screen Layout</h3>
+<ol>
+<li><strong>Language toggle</strong> (top-right) — switches between English and Thai (ภาษาไทย)</li>
+<li><strong>Header</strong> — displays "Welcome back" / "Join 66" depending on active tab</li>
+<li><strong>Tab toggle</strong> — "Sign In" / "Sign Up" segmented control</li>
+<li><strong>OAuth buttons</strong> (in order):
+  <ul>
+    <li>Continue with Apple</li>
+    <li>Continue with Google</li>
+    <li>Continue with LINE</li>
+  </ul>
+</li>
+<li><strong>OR divider</strong></li>
+<li><strong>Dev email login</strong> (debug mode only) — text field + "Dev Sign In" button</li>
+<li><strong>Terms text</strong> — centered at the bottom</li>
+</ol>
+
+<h3>OAuth Flow</h3>
+<ol>
+<li>User taps an OAuth button</li>
+<li>App triggers the native OAuth flow for the selected provider</li>
+<li>On success, the app sends the OAuth token to <code>POST /api/v1/auth/callback</code></li>
+<li>Backend verifies the token, creates/finds the user, returns PASETO access + refresh tokens</li>
+<li>Tokens are stored in secure storage; user is redirected to the home feed</li>
+</ol>
+
+<h3>Error Handling</h3>
+<ul>
+<li>Auth errors display as a snackbar at the bottom of the screen</li>
+<li>All buttons are disabled while a login request is in progress</li>
+</ul>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="home-feed">4. Home Feed</h2>
+
+<p><strong>Route:</strong> <code>/</code> — Tab 0 (Home)</p>
+
+<h3>Feed Screen Layout</h3>
+<ul>
+<li><strong>App bar:</strong> "66" logo (primary color, bold) + notification bell icon (top-right, navigates to <code>/notifications</code>)</li>
+<li><strong>Body:</strong> Vertical list of <code>FeedPostCard</code> widgets</li>
+</ul>
+
+<h3>Post Card Anatomy</h3>
+<p>Each card shows:</p>
+<ul>
+<li>Creator avatar + display name + handle</li>
+<li>Post image (tap navigates to post detail)</li>
+<li>Engagement row: like button, comment button, save button</li>
+<li>Like count</li>
+<li>Caption (truncated)</li>
+<li>"View all N comments" link</li>
+</ul>
+
+<h3>Infinite Scroll</h3>
+<ul>
+<li>Loads more posts when the user scrolls within 3 items of the end</li>
+<li>Cursor-based pagination (no duplicate/skipped posts)</li>
+<li><code>hasMore</code> flag controls whether more loading is triggered</li>
+</ul>
+
+<h3>Pull-to-Refresh</h3>
+<p>Pull down to refresh the entire feed.</p>
+
+<h3>Empty State</h3>
+<ul>
+<li>Icon: <code>dynamic_feed_outlined</code> (48px)</li>
+<li>Text: "No posts yet"</li>
+</ul>
+
+<h3>Error State</h3>
+<ul>
+<li><code>ErrorView</code> widget with "Failed to load feed" message + Retry button</li>
+</ul>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="explore">5. Explore</h2>
+
+<p><strong>Route:</strong> <code>/search</code> — Tab 3 (Explore)</p>
+
+<h3>Layout</h3>
+<ul>
+<li><strong>App bar:</strong> Title "Explore"</li>
+<li><strong>Body:</strong> 2-column grid with <code>crossAxisCount: 2</code></li>
+</ul>
+
+<h3>Tile Layout</h3>
+<ul>
+<li>Aspect ratio: 0.78 (portrait)</li>
+<li>Spacing: 2px between tiles</li>
+<li>Each tile shows:
+  <ul>
+    <li>Post thumbnail image (fills tile)</li>
+    <li>Bottom gradient overlay with: <code>@handle</code> (white, 70% opacity) and caption (white, bold, max 2 lines)</li>
+  </ul>
+</li>
+<li><strong>Tap:</strong> Navigates to <code>/post/:id</code></li>
+</ul>
+
+<h3>Infinite Scroll</h3>
+<p>Loads more when within 4 items of the end.</p>
+
+<h3>Empty State</h3>
+<ul>
+<li>Icon: <code>explore_outlined</code></li>
+<li>Text: "Explore will fill up as new posts arrive"</li>
+</ul>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="post-detail">6. Post Detail</h2>
+
+<p><strong>Route:</strong> <code>/post/:id</code> — Full-screen (no bottom nav)</p>
+
+<h3>Layout</h3>
+<ul>
+<li><strong>App bar:</strong> Title "Post" + overflow menu (three dots)</li>
+<li><strong>Media carousel:</strong> Single image fills width (1:1 aspect ratio); multiple images use a swipeable PageView (420px height)</li>
+<li><strong>Creator row:</strong> Avatar (44px) + display name (bold) + <code>@handle</code> — tapping navigates to creator's profile</li>
+<li><strong>Engagement row:</strong> Like / Comment / Save buttons with counts</li>
+<li><strong>Caption:</strong> Full text below engagement row</li>
+<li><strong>Comments link:</strong> "View all N comments" or "Add the first comment" — opens comments bottom sheet</li>
+<li><strong>Affiliate links section:</strong> Listed below caption</li>
+</ul>
+
+<h3>Overflow Menu</h3>
+<h4>Post Owner</h4>
+<table>
+<tr><th>Action</th><th>Icon</th><th>Behavior</th></tr>
+<tr><td>Edit caption</td><td><code>edit_outlined</code></td><td>Opens bottom sheet with caption editor (max 2200 chars)</td></tr>
+<tr><td>Add affiliate link</td><td><code>add_link_outlined</code></td><td>Opens affiliate link form bottom sheet</td></tr>
+<tr><td>Delete post</td><td><code>delete_outline</code></td><td>Shows confirmation dialog, then soft-deletes</td></tr>
+</table>
+
+<h4>Non-Owner</h4>
+<table>
+<tr><th>Action</th><th>Icon</th><th>Behavior</th></tr>
+<tr><td>Report</td><td><code>flag_outlined</code></td><td>Opens report bottom sheet</td></tr>
+</table>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="comments">7. Comments</h2>
+
+<p><strong>Opened from:</strong> Post detail screen (engagement row comment button or "View all comments" link)</p>
+
+<h3>Bottom Sheet Behavior</h3>
+<ul>
+<li>Opens as a modal bottom sheet at 88% of screen height</li>
+<li>Drag handle visible at top</li>
+<li>Title: "Comments" with total count on the right</li>
+</ul>
+
+<h3>Comment List</h3>
+<ul>
+<li>Flat list (no threading/nesting in V0)</li>
+<li>Each comment shows:
+  <ul>
+    <li>Author avatar (36px)</li>
+    <li>Author display name (bold) + <code>@handle</code> + date (e.g., "Mar 15")</li>
+    <li><strong>Pinned badge</strong> — pill with "Pinned" label if <code>comment.pinned == true</code></li>
+    <li>Comment body text</li>
+  </ul>
+</li>
+<li><strong>Tap on author:</strong> Closes sheet and navigates to author's profile</li>
+</ul>
+
+<h3>Infinite Scroll</h3>
+<p>Cursor-based pagination; loads more when within 3 items of end.</p>
+
+<h3>Input Field</h3>
+<ul>
+<li>Pinned to bottom of sheet above keyboard</li>
+<li>Left: User avatar (36px)</li>
+<li>Center: Multi-line text field ("Add a comment...")</li>
+<li>Right: Send button (filled icon button)</li>
+<li>Disabled while submitting</li>
+</ul>
+
+<h3>Empty State</h3>
+<ul>
+<li>Icon: <code>chat_bubble_outline</code></li>
+<li>Title: "No comments yet"</li>
+<li>Subtitle: "Start the conversation."</li>
+</ul>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="create-post">8. Create Post</h2>
+
+<p><strong>Route:</strong> <code>/create</code> — Full-screen (no bottom nav)</p>
+
+<h3>Flow</h3>
+<ol>
+<li>Screen opens and immediately shows an image source picker bottom sheet:
+  <ul>
+    <li>"Photo Library" — opens device gallery</li>
+    <li>"Take Photo" — opens camera</li>
+  </ul>
+</li>
+<li>If the user dismisses without picking, the screen pops (returns to previous)</li>
+<li>After selecting an image:
+  <ul>
+    <li>Image preview fills the top (1:1 aspect ratio, tap to re-pick)</li>
+    <li>Caption text field below (multi-line, max 2200 characters, character counter)</li>
+  </ul>
+</li>
+<li>App bar: Close button (left) + "Share" button (right, primary color when enabled)</li>
+<li>"Share" is disabled until an image is selected</li>
+</ol>
+
+<h3>Upload Process</h3>
+<ol>
+<li>Image is read as bytes with detected MIME type (JPEG/PNG/WebP)</li>
+<li>Upload overlay (semi-transparent black + spinner) covers the screen during upload</li>
+<li>On success: screen pops back</li>
+<li>On error: snackbar with "Failed to create post: ..." message</li>
+</ol>
+
+<h3>Image Constraints</h3>
+<ul>
+<li>Max width: 2048px</li>
+<li>Max height: 2048px</li>
+<li>Quality: 85%</li>
+</ul>
+
+<div class="callout info">
+<div class="callout-title">QA Note: Upload Flow</div>
+The backend processes the upload through presigned URL flow: <code>POST /api/v1/media/upload-sessions</code> &rarr; direct S3 upload &rarr; <code>POST /api/v1/media/upload-sessions/:id/confirm</code> &rarr; then <code>POST /api/v1/posts</code> with the media ID.
+</div>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="affiliate-links">9. Affiliate Links</h2>
+
+<h3>Creator: Adding a Link</h3>
+<p>From the post detail overflow menu ("Add affiliate link"), a bottom sheet opens with:</p>
+<table>
+<tr><th>Field</th><th>Type</th><th>Required</th><th>Notes</th></tr>
+<tr><td>Destination URL</td><td>URL input</td><td>Yes</td><td>The product page URL (e.g., <code>https://shop.example.com/item</code>)</td></tr>
+<tr><td>Product title</td><td>Text</td><td>No</td><td>Display name for the link</td></tr>
+<tr><td>Product image URL</td><td>URL input</td><td>No</td><td>Thumbnail image of the product</td></tr>
+<tr><td>Price</td><td>Number (decimal)</td><td>No</td><td>Product price</td></tr>
+<tr><td>Currency</td><td>Text (uppercase)</td><td>No</td><td>e.g., THB, USD</td></tr>
+</table>
+
+<ul>
+<li>"Add link" button submits to <code>POST /api/v1/posts/:id/links</code></li>
+<li>On success: sheet closes, post detail refreshes with new link</li>
+</ul>
+
+<h3>Consumer: Tapping a Link</h3>
+<ul>
+<li>Affiliate links appear in the "Affiliate links" section of post detail</li>
+<li>Each link shows: product title (or URL if no title), price + currency, redirect URL</li>
+<li><strong>Tap:</strong> Opens <code>GET /r/:code</code> in external browser</li>
+<li>The redirect endpoint records a click event (IP + UA hashed, no raw PII), then 302-redirects to the destination URL</li>
+</ul>
+
+<h3>Creator Analytics</h3>
+<ul>
+<li>Accessible from Settings &rarr; "Creator Analytics" (only visible to <code>creator</code> role)</li>
+<li>Route: <code>/creator/analytics</code></li>
+<li>Endpoint: <code>GET /api/v1/creators/me/analytics</code></li>
+</ul>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="profile">10. Profile</h2>
+
+<h3>Own Profile</h3>
+<p><strong>Route:</strong> <code>/profile</code> — Tab 4 (Profile)</p>
+
+<p><strong>Layout (top to bottom):</strong></p>
+<ol>
+<li><strong>App bar:</strong> <code>@handle</code> title + search icon (disabled) + settings gear icon</li>
+<li><strong>Profile header:</strong> Avatar, display name, bio, links, music URL</li>
+<li><strong>Stats row:</strong> Posts / Followers / Following counts (tapping Followers or Following navigates to lists)</li>
+<li><strong>Action buttons:</strong> "Edit Profile" + "Saved" buttons</li>
+<li><strong>Niche tags:</strong> Horizontal wrap of tag chips (if any)</li>
+<li><strong>Gamification section:</strong> Level/XP card + streak card</li>
+<li><strong>Post grid:</strong> 3-column grid of user's posts (tap navigates to post detail)</li>
+</ol>
+
+<h3>Public Profile</h3>
+<p><strong>Route:</strong> <code>/profile/:id</code> — Full-screen</p>
+<ul>
+<li>Same layout as own profile but without "Edit Profile" / "Saved" buttons</li>
+<li>If the user views their own profile via <code>/profile/:id</code>, they are automatically redirected to <code>/profile</code></li>
+<li>Same redirect logic for <code>/profile/:id/followers</code> &rarr; <code>/profile/followers</code></li>
+</ul>
+
+<h3>Followers / Following Lists</h3>
+<p><strong>Routes:</strong> <code>/profile/followers</code>, <code>/profile/following</code>, <code>/profile/:id/followers</code>, <code>/profile/:id/following</code></p>
+<ul>
+<li>Full-screen list of user cards</li>
+<li>Shows avatar, display name, handle</li>
+</ul>
+
+<h3>Saved Posts</h3>
+<p><strong>Route:</strong> <code>/profile/saved</code> — Full-screen grid of posts the user has bookmarked.</p>
+
+<h3>Edit Profile</h3>
+<p><strong>Route:</strong> <code>/profile/edit</code> — Full-screen</p>
+
+<table>
+<tr><th>Field</th><th>Max Length</th><th>Required</th><th>Validation</th></tr>
+<tr><td>Display Name</td><td>100 chars</td><td>Yes</td><td>Cannot be blank</td></tr>
+<tr><td>Handle</td><td>30 chars</td><td>Yes</td><td>Min 3 chars, only <code>[a-zA-Z0-9_]</code></td></tr>
+<tr><td>Pronouns</td><td>—</td><td>No</td><td>Dropdown: he/him, she/her, they/them, Custom</td></tr>
+<tr><td>Custom Pronouns</td><td>50 chars</td><td>No</td><td>Shown only when "Custom" is selected</td></tr>
+<tr><td>Bio</td><td>500 chars</td><td>No</td><td>Multi-line (4 lines visible)</td></tr>
+<tr><td>Gender</td><td>—</td><td>No</td><td>Segmented: Male / Female / Other</td></tr>
+<tr><td>Links</td><td>—</td><td>No</td><td>Up to 5 URLs, must be valid <code>http://</code> or <code>https://</code></td></tr>
+<tr><td>Profile Song</td><td>—</td><td>No</td><td>Spotify or Apple Music URL</td></tr>
+</table>
+
+<p><strong>Additional sections:</strong></p>
+<ul>
+<li><strong>Avatar:</strong> Tap to change (camera icon overlay)</li>
+<li><strong>Badges:</strong> "Early Adopter", "Top Seller", "Style Icon" — display-only filter chips</li>
+<li><strong>Switch to Professional Account:</strong> Button shows "Coming soon" snackbar</li>
+</ul>
+
+<div class="callout warn">
+<div class="callout-title">QA Note: Avatar Upload</div>
+Avatar upload is not yet implemented. Tapping the avatar photo does nothing.
+</div>
+
+<div class="callout warn">
+<div class="callout-title">QA Note: Professional Account</div>
+"Switch to Professional Account" always shows "Coming soon" snackbar.
+</div>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="gamification">11. Gamification</h2>
+
+<h3>Level / XP Card</h3>
+<ul>
+<li>Displayed on the profile screen in the gamification section</li>
+<li>Shows current level, XP progress bar, XP needed for next level</li>
+</ul>
+
+<h3>Streak Card</h3>
+<ul>
+<li>Shows current daily login streak</li>
+<li>Streak count and flame icon</li>
+</ul>
+
+<h3>Achievements Screen</h3>
+<p><strong>Route:</strong> <code>/achievements</code> — Full-screen</p>
+<ul>
+<li>Accessible from Settings &rarr; "Achievements"</li>
+<li>Lists all available achievements with unlock status</li>
+<li>Endpoint: <code>GET /api/v1/users/me/gamification</code></li>
+</ul>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="settings">12. Settings</h2>
+
+<p><strong>Route:</strong> <code>/settings</code> — Full-screen (no bottom nav)</p>
+
+<h3>Sections</h3>
+
+<h4>Account</h4>
+<ul>
+<li><strong>Email</strong> — read-only, managed by sign-in provider</li>
+<li><strong>Account status</strong> — displays current status (e.g., <code>active</code>)</li>
+</ul>
+
+<h4>Language</h4>
+<ul>
+<li>Segmented button: <strong>English</strong> / <strong>ภาษาไทย</strong></li>
+<li>Changes are persisted to the backend</li>
+</ul>
+
+<h4>Appearance</h4>
+<ul>
+<li>Segmented button: <strong>Light</strong> / <strong>Dark</strong> / <strong>System</strong></li>
+<li>Changes are applied immediately and persisted locally</li>
+</ul>
+
+<h4>More</h4>
+<ul>
+<li><strong>Edit Profile</strong> &rarr; navigates to <code>/profile/edit</code></li>
+<li><strong>Creator Analytics</strong> &rarr; navigates to <code>/creator/analytics</code> (only visible to <code>creator</code> role)</li>
+<li><strong>Achievements</strong> &rarr; navigates to <code>/achievements</code></li>
+</ul>
+
+<h4>Danger Zone</h4>
+<p><strong>Delete Account</strong> — opens confirmation dialog.</p>
+
+<h3>Delete Account Flow</h3>
+<ol>
+<li>User taps "Delete Account"</li>
+<li>Dialog appears: "This schedules your account for deletion and signs you out on this device."</li>
+<li>User must type <strong>exactly</strong> <code>DELETE</code> (case-sensitive) in the text field</li>
+<li>"Delete Account" button enables only when input matches <code>DELETE</code></li>
+<li>On confirm: calls <code>DELETE /api/v1/users/me</code>, shows effective deletion date, signs out locally</li>
+<li>Backend soft-deletes the account (30-day grace period before permanent removal)</li>
+</ol>
+
+<div class="callout warn">
+<div class="callout-title">QA Note: Delete Confirmation</div>
+The confirmation string <code>DELETE</code> is case-sensitive. "delete" or "Delete" will not enable the button.
+</div>
+
+<h3>Sign Out</h3>
+<p>Red "Sign Out" button at the bottom of the settings screen. Clears local auth state and redirects to login.</p>
+
+<h3>Version</h3>
+<p>Centered "v1.0.0" label at the bottom.</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="reporting">13. Reporting</h2>
+
+<p><strong>Opened from:</strong> Post detail overflow menu ("Report") or user profile (report user)</p>
+
+<h3>Report Bottom Sheet</h3>
+<ul>
+<li>Title: "Report"</li>
+<li>Radio button list with 4 reasons:</li>
+</ul>
+
+<table>
+<tr><th>Value</th><th>Display Label</th></tr>
+<tr><td><code>spam</code></td><td>Spam</td></tr>
+<tr><td><code>inappropriate</code></td><td>Inappropriate content</td></tr>
+<tr><td><code>harassment</code></td><td>Harassment</td></tr>
+<tr><td><code>other</code></td><td>Other</td></tr>
+</table>
+
+<ul>
+<li>"Submit" button (disabled until a reason is selected)</li>
+<li>On success: sheet closes, "Report submitted" snackbar</li>
+<li>On error: "Failed to submit report" snackbar</li>
+<li>Endpoint: <code>POST /api/v1/reports</code></li>
+</ul>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="placeholder-screens">14. Placeholder Screens</h2>
+
+<h3>Notifications</h3>
+<p><strong>Route:</strong> <code>/notifications</code> — Full-screen. Accessed from the bell icon on the home feed app bar. Currently a placeholder/stub screen.</p>
+
+<div class="callout info">
+<div class="callout-title">QA Note: Stub Endpoints</div>
+The notifications endpoints (<code>GET /api/v1/notifications</code>, <code>PATCH /api/v1/notifications/:id/read</code>, <code>PATCH /api/v1/notifications/read-all</code>) return <strong>501 Not Implemented</strong>.
+</div>
+
+<h3>Shorts</h3>
+<p><strong>Route:</strong> <code>/shorts</code> — Tab 1 (Shorts). Placeholder screen for future short-form video content.</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="api-quick-reference">15. API Quick Reference</h2>
+
+<p>All endpoints are under the base URL <code>http://localhost:8080</code>.</p>
+
+<h3>Public Routes</h3>
+<table>
+<tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th><th>Status</th></tr>
+<tr><td>GET</td><td><code>/health</code></td><td>No</td><td>Health check</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+<tr><td>GET</td><td><code>/r/:code</code></td><td>No</td><td>Affiliate redirect (tracked)</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+</table>
+
+<h3>Auth</h3>
+<table>
+<tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th><th>Status</th></tr>
+<tr><td>POST</td><td><code>/api/v1/auth/callback</code></td><td>No</td><td>OAuth callback (Google/Apple/LINE)</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+<tr><td>POST</td><td><code>/api/v1/auth/refresh</code></td><td>No</td><td>Refresh access token</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+<tr><td>POST</td><td><code>/api/v1/auth/logout</code></td><td>Yes</td><td>Logout (invalidate session)</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+</table>
+
+<h3>Users</h3>
+<table>
+<tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th><th>Status</th></tr>
+<tr><td>GET</td><td><code>/api/v1/users/me</code></td><td>Yes</td><td>Get current user</td><td><span class="badge badge-partial">Partial</span></td></tr>
+<tr><td>PATCH</td><td><code>/api/v1/users/me</code></td><td>Yes</td><td>Update current user</td><td><span class="badge badge-partial">Partial</span></td></tr>
+<tr><td>DELETE</td><td><code>/api/v1/users/me</code></td><td>Yes</td><td>Delete account (soft)</td><td><span class="badge badge-partial">Partial</span></td></tr>
+<tr><td>GET</td><td><code>/api/v1/users/me/profile</code></td><td>Yes</td><td>Get own profile</td><td><span class="badge badge-partial">Partial</span></td></tr>
+<tr><td>PATCH</td><td><code>/api/v1/users/me/profile</code></td><td>Yes</td><td>Update own profile</td><td><span class="badge badge-partial">Partial</span></td></tr>
+<tr><td>GET</td><td><code>/api/v1/users/me/saved-posts</code></td><td>Yes</td><td>Get saved posts</td><td><span class="badge badge-partial">Partial</span></td></tr>
+<tr><td>GET</td><td><code>/api/v1/users/me/gamification</code></td><td>Yes</td><td>Get XP, level, streaks, achievements</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+<tr><td>GET</td><td><code>/api/v1/users/:id/profile</code></td><td>Yes</td><td>Get public profile</td><td><span class="badge badge-partial">Partial</span></td></tr>
+</table>
+
+<h3>Social</h3>
+<table>
+<tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th><th>Status</th></tr>
+<tr><td>POST</td><td><code>/api/v1/users/:id/follow</code></td><td>Yes</td><td>Follow user</td><td><span class="badge badge-stub">Stub (501)</span></td></tr>
+<tr><td>DELETE</td><td><code>/api/v1/users/:id/follow</code></td><td>Yes</td><td>Unfollow user</td><td><span class="badge badge-stub">Stub (501)</span></td></tr>
+<tr><td>GET</td><td><code>/api/v1/users/:id/followers</code></td><td>Yes</td><td>List followers</td><td><span class="badge badge-stub">Stub (501)</span></td></tr>
+<tr><td>GET</td><td><code>/api/v1/users/:id/following</code></td><td>Yes</td><td>List following</td><td><span class="badge badge-stub">Stub (501)</span></td></tr>
+</table>
+
+<h3>Posts</h3>
+<table>
+<tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th><th>Status</th></tr>
+<tr><td>POST</td><td><code>/api/v1/posts</code></td><td>Yes</td><td>Create post</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+<tr><td>GET</td><td><code>/api/v1/posts/:id</code></td><td>Yes</td><td>Get post by ID</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+<tr><td>PATCH</td><td><code>/api/v1/posts/:id</code></td><td>Yes</td><td>Update post</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+<tr><td>DELETE</td><td><code>/api/v1/posts/:id</code></td><td>Yes</td><td>Delete post (soft)</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+<tr><td>GET</td><td><code>/api/v1/users/:id/posts</code></td><td>Yes</td><td>List user's posts</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+</table>
+
+<h3>Feed</h3>
+<table>
+<tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th><th>Status</th></tr>
+<tr><td>GET</td><td><code>/api/v1/feed</code></td><td>Yes</td><td>Home feed (paginated)</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+<tr><td>GET</td><td><code>/api/v1/feed/explore</code></td><td>Yes</td><td>Explore/trending feed</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+</table>
+
+<h3>Engagement</h3>
+<div class="callout warn">
+<div class="callout-title">All Engagement Endpoints Return 501</div>
+The social and engagement modules are stubs. Like, comment, and save operations will return <strong>501 Not Implemented</strong>.
+</div>
+<table>
+<tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th><th>Status</th></tr>
+<tr><td>POST</td><td><code>/api/v1/posts/:id/like</code></td><td>Yes</td><td>Like post</td><td><span class="badge badge-stub">Stub (501)</span></td></tr>
+<tr><td>DELETE</td><td><code>/api/v1/posts/:id/like</code></td><td>Yes</td><td>Unlike post</td><td><span class="badge badge-stub">Stub (501)</span></td></tr>
+<tr><td>GET</td><td><code>/api/v1/posts/:id/comments</code></td><td>Yes</td><td>List comments</td><td><span class="badge badge-stub">Stub (501)</span></td></tr>
+<tr><td>POST</td><td><code>/api/v1/posts/:id/comments</code></td><td>Yes</td><td>Create comment</td><td><span class="badge badge-stub">Stub (501)</span></td></tr>
+<tr><td>DELETE</td><td><code>/api/v1/posts/:id/comments/:commentId</code></td><td>Yes</td><td>Delete comment</td><td><span class="badge badge-stub">Stub (501)</span></td></tr>
+<tr><td>POST</td><td><code>/api/v1/posts/:id/save</code></td><td>Yes</td><td>Save post</td><td><span class="badge badge-stub">Stub (501)</span></td></tr>
+<tr><td>DELETE</td><td><code>/api/v1/posts/:id/save</code></td><td>Yes</td><td>Unsave post</td><td><span class="badge badge-stub">Stub (501)</span></td></tr>
+</table>
+
+<h3>Media</h3>
+<table>
+<tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th><th>Status</th></tr>
+<tr><td>POST</td><td><code>/api/v1/media/upload-sessions</code></td><td>Yes</td><td>Create upload session (presigned URL)</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+<tr><td>POST</td><td><code>/api/v1/media/upload-sessions/:id/confirm</code></td><td>Yes</td><td>Confirm upload</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+</table>
+
+<h3>Affiliate</h3>
+<table>
+<tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th><th>Status</th></tr>
+<tr><td>POST</td><td><code>/api/v1/posts/:id/links</code></td><td>Yes</td><td>Create affiliate link</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+<tr><td>GET</td><td><code>/api/v1/creators/me/analytics</code></td><td>Yes</td><td>Creator analytics</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+</table>
+
+<h3>Notifications</h3>
+<table>
+<tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th><th>Status</th></tr>
+<tr><td>GET</td><td><code>/api/v1/notifications</code></td><td>Yes</td><td>List notifications</td><td><span class="badge badge-stub">Stub (501)</span></td></tr>
+<tr><td>PATCH</td><td><code>/api/v1/notifications/:id/read</code></td><td>Yes</td><td>Mark notification read</td><td><span class="badge badge-stub">Stub (501)</span></td></tr>
+<tr><td>PATCH</td><td><code>/api/v1/notifications/read-all</code></td><td>Yes</td><td>Mark all read</td><td><span class="badge badge-stub">Stub (501)</span></td></tr>
+</table>
+
+<h3>Reports &amp; Admin</h3>
+<table>
+<tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th><th>Status</th></tr>
+<tr><td>POST</td><td><code>/api/v1/reports</code></td><td>Yes</td><td>Submit report</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+<tr><td>GET</td><td><code>/api/v1/admin/reports</code></td><td>Admin</td><td>List reports</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+<tr><td>PATCH</td><td><code>/api/v1/admin/reports/:id</code></td><td>Admin</td><td>Update report</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+<tr><td>POST</td><td><code>/api/v1/admin/posts/:id/remove</code></td><td>Admin</td><td>Remove post</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+<tr><td>POST</td><td><code>/api/v1/admin/users/:id/ban</code></td><td>Admin</td><td>Ban user</td><td><span class="badge badge-ok">Implemented</span></td></tr>
+</table>
+
+<h3>Search</h3>
+<table>
+<tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th><th>Status</th></tr>
+<tr><td>GET</td><td><code>/api/v1/search</code></td><td>Yes</td><td>Full-text search</td><td><span class="badge badge-stub">Stub (501)</span></td></tr>
+</table>
+
+<h3>Notes</h3>
+<ul>
+<li>All <code>POST</code>, <code>PATCH</code>, and <code>DELETE</code> requests require an <code>Idempotency-Key</code> header (UUID)</li>
+<li>All authenticated routes require <code>Authorization: Bearer &lt;token&gt;</code> header</li>
+<li>Response envelope: <code>{ "data": ..., "meta": { "cursor": ..., "has_more": ... }, "error": { "code": ..., "message": ..., "details": ... } }</code></li>
+<li>Pagination is always cursor-based (never offset/page numbers)</li>
+</ul>
+
+</div><!-- /main-inner -->
+</div><!-- /main -->
+
+<!-- Back to top -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&#8593;</button>
+
+<script>
+// ── Sidebar toggle (mobile) ──
+const hamburger=document.getElementById('hamburger');
+const sidebar=document.getElementById('sidebar');
+const overlay=document.getElementById('overlay');
+function toggleSidebar(){sidebar.classList.toggle('open');overlay.classList.toggle('open')}
+hamburger.addEventListener('click',toggleSidebar);
+overlay.addEventListener('click',toggleSidebar);
+
+// Close sidebar on link click (mobile)
+sidebar.querySelectorAll('.nav-link').forEach(a=>{a.addEventListener('click',()=>{if(window.innerWidth<=900){sidebar.classList.remove('open');overlay.classList.remove('open')}})});
+
+// ── Collapsible nav groups ──
+document.querySelectorAll('.nav-group-title').forEach(t=>{t.addEventListener('click',()=>{t.parentElement.classList.toggle('open')})});
+
+// ── Scroll-spy ──
+const sections=document.querySelectorAll('h2[id]');
+const navLinks=document.querySelectorAll('.nav-link');
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){navLinks.forEach(l=>l.classList.remove('active'));const active=document.querySelector('.nav-link[href="#'+e.target.id+'"]');if(active)active.classList.add('active')}})},{rootMargin:'-80px 0px -70% 0px',threshold:0});
+sections.forEach(s=>observer.observe(s));
+
+// ── Back to top ──
+const btn=document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{btn.classList.toggle('visible',window.scrollY>400)});
+btn.addEventListener('click',()=>{window.scrollTo({top:0,behavior:'smooth'})});
+
+// ── Copy code blocks ──
+function copyCode(el){const pre=el.parentElement;const code=pre.querySelector('code');navigator.clipboard.writeText(code.textContent).then(()=>{el.textContent='Copied!';el.classList.add('copied');setTimeout(()=>{el.textContent='Copy';el.classList.remove('copied')},1500)})}
+</script>
+</body>
+</html>
