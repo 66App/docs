@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>66App — User Manual</title>
+<style>
+:root{
+--bg:#ffffff;--bg2:#f5f5f0;--bg3:#eeedea;
+--tx:#1a1a1a;--tx2:#6b6b65;--tx3:#9c9a92;
+--bd:#d8d7d2;--bd2:#b4b2a9;
+--blue-bg:#E6F1FB;--blue-tx:#0C447C;--blue-bd:#185FA5;
+--teal-bg:#E1F5EE;--teal-tx:#085041;--teal-bd:#0F6E56;
+--purple-bg:#EEEDFE;--purple-tx:#3C3489;--purple-bd:#534AB7;
+--coral-bg:#FAECE7;--coral-tx:#712B13;--coral-bd:#993C1D;
+--amber-bg:#FAEEDA;--amber-tx:#633806;--amber-bd:#854F0B;
+--green-bg:#EAF3DE;--green-tx:#27500A;--green-bd:#3B6D11;
+--pink-bg:#FBEAF0;--pink-tx:#72243E;--pink-bd:#993556;
+--info-bg:#E6F1FB;--info-tx:#0C447C;--info-bd:#85B7EB;
+--warn-bg:#FAEEDA;--warn-tx:#633806;--warn-bd:#EF9F27;
+--ok-bg:#EAF3DE;--ok-tx:#27500A;--ok-bd:#97C459;
+--radius:8px;--radius-lg:12px;
+--sidebar-w:260px
+}
+@media(prefers-color-scheme:dark){:root{
+--bg:#1a1a1a;--bg2:#2c2c2a;--bg3:#3d3d3a;
+--tx:#e8e6df;--tx2:#9c9a92;--tx3:#73726c;
+--bd:#444441;--bd2:#5f5e5a;
+--blue-bg:#042C53;--blue-tx:#B5D4F4;--blue-bd:#85B7EB;
+--teal-bg:#04342C;--teal-tx:#9FE1CB;--teal-bd:#5DCAA5;
+--purple-bg:#26215C;--purple-tx:#CECBF6;--purple-bd:#AFA9EC;
+--coral-bg:#4A1B0C;--coral-tx:#F5C4B3;--coral-bd:#F0997B;
+--amber-bg:#412402;--amber-tx:#FAC775;--amber-bd:#EF9F27;
+--green-bg:#173404;--green-tx:#C0DD97;--green-bd:#97C459;
+--pink-bg:#4B1528;--pink-tx:#F4C0D1;--pink-bd:#ED93B1;
+--info-bg:#042C53;--info-tx:#B5D4F4;--info-bd:#85B7EB;
+--warn-bg:#412402;--warn-tx:#FAC775;--warn-bd:#EF9F27;
+--ok-bg:#173404;--ok-tx:#C0DD97;--ok-bd:#97C459
+}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);line-height:1.6}
+
+/* ── Sidebar ── */
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--bg2);border-right:1px solid var(--bd);overflow-y:auto;padding:20px 0;z-index:100;transition:transform .25s ease}
+.sidebar-brand{padding:0 20px 16px;font-size:15px;font-weight:600;color:var(--tx);border-bottom:1px solid var(--bd)}
+.sidebar-brand span{color:var(--blue-tx);font-weight:700}
+.nav-group{padding:12px 0 0}
+.nav-group-title{font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;padding:0 20px 6px;cursor:pointer;user-select:none;display:flex;align-items:center;gap:6px}
+.nav-group-title::before{content:'';display:inline-block;width:0;height:0;border-left:4px solid var(--tx3);border-top:3px solid transparent;border-bottom:3px solid transparent;transition:transform .2s}
+.nav-group.open .nav-group-title::before{transform:rotate(90deg)}
+.nav-group-items{display:none;padding:0 0 4px}
+.nav-group.open .nav-group-items{display:block}
+.nav-link{display:block;font-size:13px;color:var(--tx2);text-decoration:none;padding:4px 20px 4px 28px;transition:all .12s}
+.nav-link:hover{color:var(--tx);background:var(--bg3)}
+.nav-link.active{color:var(--blue-tx);font-weight:500;border-right:2px solid var(--blue-bd)}
+
+/* ── Main ── */
+.main{margin-left:var(--sidebar-w);padding:32px 40px 80px;max-width:calc(var(--sidebar-w) + 860px + 80px)}
+.main-inner{max-width:860px}
+
+/* ── Hamburger (mobile) ── */
+.hamburger{display:none;position:fixed;top:12px;left:12px;z-index:200;width:40px;height:40px;border-radius:var(--radius);background:var(--bg2);border:1px solid var(--bd);cursor:pointer;align-items:center;justify-content:center}
+.hamburger svg{width:20px;height:20px;stroke:var(--tx);fill:none;stroke-width:2;stroke-linecap:round}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .overlay.open{display:block}
+  .hamburger{display:flex}
+  .main{margin-left:0;padding:60px 20px 80px}
+}
+
+/* ── Typography ── */
+h1{font-size:24px;font-weight:600;margin:0 0 8px}
+.subtitle{font-size:14px;color:var(--tx2);margin:0 0 32px}
+h2{font-size:20px;font-weight:600;margin:48px 0 16px;padding-top:16px;border-top:1px solid var(--bd)}
+h3{font-size:16px;font-weight:600;margin:28px 0 12px}
+h4{font-size:14px;font-weight:600;margin:20px 0 8px}
+p{margin:0 0 12px;font-size:14px}
+ul,ol{margin:0 0 12px;padding-left:24px;font-size:14px}
+li{margin:0 0 4px}
+
+/* ── Tables ── */
+table{width:100%;border-collapse:collapse;margin:0 0 16px;font-size:13px}
+th{text-align:left;font-weight:600;padding:8px 12px;border-bottom:2px solid var(--bd);color:var(--tx);background:var(--bg2)}
+td{padding:8px 12px;border-bottom:1px solid var(--bd);color:var(--tx2);vertical-align:top}
+tr:hover td{background:var(--bg2)}
+
+/* ── Callout boxes ── */
+.callout{border-radius:var(--radius);padding:12px 16px;margin:0 0 16px;font-size:13px;line-height:1.5}
+.callout-title{font-weight:600;margin:0 0 4px;font-size:13px}
+.callout.info{background:var(--info-bg);color:var(--info-tx);border:1px solid var(--info-bd)}
+.callout.warn{background:var(--warn-bg);color:var(--warn-tx);border:1px solid var(--warn-bd)}
+.callout.ok{background:var(--ok-bg);color:var(--ok-tx);border:1px solid var(--ok-bd)}
+
+/* ── Back to top ── */
+.back-to-top{position:fixed;bottom:24px;right:24px;width:40px;height:40px;border-radius:50%;background:var(--blue-bg);color:var(--blue-tx);border:1px solid var(--blue-bd);cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50;font-size:18px}
+.back-to-top.visible{opacity:1;pointer-events:auto}
+.back-to-top:hover{background:var(--blue-bd);color:#fff}
+</style>
+</head>
+<body>
+
+<!-- Hamburger -->
+<button class="hamburger" id="hamburger" aria-label="Toggle navigation">
+<svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay"></div>
+
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+<div class="sidebar-brand"><span>66</span>App User Manual</div>
+
+<div class="nav-group open">
+<div class="nav-group-title">Getting Started</div>
+<div class="nav-group-items">
+<a class="nav-link" href="#welcome">Welcome</a>
+<a class="nav-link" href="#sign-up-sign-in">Sign Up &amp; Sign In</a>
+<a class="nav-link" href="#navigating-the-app">Navigating the App</a>
+</div>
+</div>
+
+<div class="nav-group open">
+<div class="nav-group-title">Your Feed</div>
+<div class="nav-group-items">
+<a class="nav-link" href="#home-feed">Home Feed</a>
+<a class="nav-link" href="#explore-discover">Explore &amp; Discover</a>
+</div>
+</div>
+
+<div class="nav-group open">
+<div class="nav-group-title">Creating Content</div>
+<div class="nav-group-items">
+<a class="nav-link" href="#creating-a-post">Creating a Post</a>
+<a class="nav-link" href="#editing-deleting-posts">Editing &amp; Deleting Posts</a>
+</div>
+</div>
+
+<div class="nav-group open">
+<div class="nav-group-title">Engaging with Content</div>
+<div class="nav-group-items">
+<a class="nav-link" href="#liking-posts">Liking Posts</a>
+<a class="nav-link" href="#commenting">Commenting</a>
+<a class="nav-link" href="#saving-posts">Saving Posts</a>
+</div>
+</div>
+
+<div class="nav-group open">
+<div class="nav-group-title">Shopping &amp; Affiliate Links</div>
+<div class="nav-group-items">
+<a class="nav-link" href="#shopping-from-posts">Shopping from Posts</a>
+<a class="nav-link" href="#adding-product-links">For Creators: Adding Product Links</a>
+<a class="nav-link" href="#creator-analytics">Creator Analytics Dashboard</a>
+</div>
+</div>
+
+<div class="nav-group open">
+<div class="nav-group-title">Your Profile</div>
+<div class="nav-group-items">
+<a class="nav-link" href="#viewing-your-profile">Viewing Your Profile</a>
+<a class="nav-link" href="#editing-your-profile">Editing Your Profile</a>
+<a class="nav-link" href="#followers-following">Followers &amp; Following</a>
+<a class="nav-link" href="#saved-posts">Saved Posts</a>
+</div>
+</div>
+
+<div class="nav-group open">
+<div class="nav-group-title">Achievements &amp; Rewards</div>
+<div class="nav-group-items">
+<a class="nav-link" href="#levels-xp">Levels &amp; XP</a>
+<a class="nav-link" href="#streaks">Streaks</a>
+<a class="nav-link" href="#badges-achievements">Badges &amp; Achievements</a>
+</div>
+</div>
+
+<div class="nav-group open">
+<div class="nav-group-title">Settings &amp; Account</div>
+<div class="nav-group-items">
+<a class="nav-link" href="#language-appearance">Language &amp; Appearance</a>
+<a class="nav-link" href="#account-information">Account Information</a>
+<a class="nav-link" href="#deleting-your-account">Deleting Your Account</a>
+<a class="nav-link" href="#signing-out">Signing Out</a>
+</div>
+</div>
+
+<div class="nav-group open">
+<div class="nav-group-title">Safety &amp; Reporting</div>
+<div class="nav-group-items">
+<a class="nav-link" href="#reporting-content">Reporting Content</a>
+<a class="nav-link" href="#blocking-users">Blocking Users</a>
+</div>
+</div>
+</nav>
+
+<!-- Main -->
+<div class="main">
+<div class="main-inner">
+
+<h1>66App User Manual</h1>
+<p class="subtitle">Your guide to fashion, shopping, and community on 66</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="welcome">Welcome</h2>
+
+<p>Welcome to 66App &mdash; a fashion-focused social platform where you can discover outfit inspiration, follow your favourite creators, and shop the products they recommend, all in one place.</p>
+
+<p>Whether you're here to browse the latest trends, share your own style, or earn rewards through affiliate links, this guide will walk you through everything you need to know.</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="sign-up-sign-in">Sign Up &amp; Sign In</h2>
+
+<p>When you first open 66App you'll see the login screen. You can switch between <strong>Sign In</strong> (returning users) and <strong>Sign Up</strong> (new users) using the toggle at the top.</p>
+
+<h3>Creating an Account</h3>
+<ol>
+<li>Open the app and tap the <strong>Sign Up</strong> tab.</li>
+<li>Choose a sign-in method:
+  <ul>
+    <li><strong>Continue with Apple</strong></li>
+    <li><strong>Continue with Google</strong></li>
+    <li><strong>Continue with LINE</strong></li>
+  </ul>
+</li>
+<li>Follow the prompts from your chosen provider to authorise 66App.</li>
+<li>Once complete, you'll be taken straight to your Home Feed.</li>
+</ol>
+
+<h3>Signing Back In</h3>
+<ol>
+<li>Open the app and tap the <strong>Sign In</strong> tab.</li>
+<li>Tap the same provider you used when you signed up.</li>
+<li>You'll be signed in automatically and returned to your Home Feed.</li>
+</ol>
+
+<div class="callout info">
+<div class="callout-title">Tip</div>
+You can switch the app language between <strong>English</strong> and <strong>Thai</strong> right from the login screen using the toggle in the top-right corner.
+</div>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="navigating-the-app">Navigating the App</h2>
+
+<p>66App uses a bottom navigation bar with four main tabs:</p>
+
+<table>
+<tr><th>Tab</th><th>What It Does</th></tr>
+<tr><td><strong>Home</strong></td><td>Your personal feed of posts from people you follow</td></tr>
+<tr><td><strong>Create</strong></td><td>Share a new outfit post (opens the post creator)</td></tr>
+<tr><td><strong>Explore</strong></td><td>Browse trending posts from the entire community</td></tr>
+<tr><td><strong>Profile</strong></td><td>View your profile, stats, and achievements</td></tr>
+</table>
+
+<p>Tap any tab to jump to that section. You can always return to the Home Feed by tapping <strong>Home</strong>.</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="home-feed">Home Feed</h2>
+
+<p>The Home Feed is the first screen you see after signing in. It shows posts from people you follow, with the most recent posts at the top.</p>
+
+<h3>Browsing Posts</h3>
+<ul>
+<li>Scroll down to see more posts &mdash; new posts load automatically as you reach the bottom.</li>
+<li>Pull down from the top of the screen to refresh your feed.</li>
+<li>Tap any post image to open the full post detail.</li>
+</ul>
+
+<h3>Post Card</h3>
+<p>Each post in your feed shows:</p>
+<ul>
+<li>The creator's profile picture, display name, and handle</li>
+<li>The post image</li>
+<li>Like, comment, and save buttons</li>
+<li>The number of likes</li>
+<li>A preview of the caption</li>
+<li>A link to view comments</li>
+</ul>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="explore-discover">Explore &amp; Discover</h2>
+
+<p>The Explore tab shows trending posts from the entire 66App community in a two-column photo grid. It's the best way to discover new creators and outfit ideas.</p>
+
+<ul>
+<li>Scroll through the grid to browse content.</li>
+<li>Tap any image to open the full post.</li>
+<li>Each tile shows the creator's handle and a short caption.</li>
+<li>New posts load automatically as you scroll.</li>
+</ul>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="creating-a-post">Creating a Post</h2>
+
+<p>Share your outfits and style with the community by creating a post.</p>
+
+<ol>
+<li>Tap the <strong>Create</strong> button in the bottom navigation bar.</li>
+<li>Choose your image source:
+  <ul>
+    <li><strong>Photo Library</strong> &mdash; pick an image from your device</li>
+    <li><strong>Take Photo</strong> &mdash; snap a new photo with your camera</li>
+  </ul>
+</li>
+<li>Review your image preview. Tap it to choose a different image.</li>
+<li>Write a caption (up to 2,200 characters). A character counter helps you stay within the limit.</li>
+<li>Tap <strong>Share</strong> in the top-right corner to publish your post.</li>
+</ol>
+
+<div class="callout info">
+<div class="callout-title">Tip</div>
+For the best quality, use images that are at least 1080px wide. The app supports JPEG, PNG, and WebP formats.
+</div>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="editing-deleting-posts">Editing &amp; Deleting Posts</h2>
+
+<h3>Editing a Caption</h3>
+<ol>
+<li>Open one of your own posts.</li>
+<li>Tap the three-dot menu in the top-right corner.</li>
+<li>Select <strong>Edit caption</strong>.</li>
+<li>Update your caption text and tap <strong>Save</strong>.</li>
+</ol>
+
+<h3>Deleting a Post</h3>
+<ol>
+<li>Open one of your own posts.</li>
+<li>Tap the three-dot menu in the top-right corner.</li>
+<li>Select <strong>Delete post</strong>.</li>
+<li>Confirm the deletion in the dialog that appears.</li>
+</ol>
+
+<div class="callout warn">
+<div class="callout-title">Warning</div>
+Deleting a post is permanent and cannot be undone. All likes, comments, and affiliate links associated with the post will also be removed.
+</div>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="liking-posts">Liking Posts</h2>
+
+<p>Show appreciation for posts you enjoy by tapping the <strong>heart icon</strong> on any post card or on the post detail screen. Tap it again to unlike.</p>
+
+<p>The total number of likes is displayed next to the heart icon.</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="commenting">Commenting</h2>
+
+<p>Join the conversation by leaving comments on posts.</p>
+
+<ol>
+<li>Open a post and tap the <strong>comment icon</strong>, or tap <strong>"View all comments"</strong>.</li>
+<li>The comments panel slides up from the bottom of the screen.</li>
+<li>Type your comment in the text field at the bottom.</li>
+<li>Tap the <strong>send button</strong> to post your comment.</li>
+</ol>
+
+<p>You can tap on any commenter's name or avatar to visit their profile.</p>
+
+<div class="callout info">
+<div class="callout-title">Tip</div>
+Some comments may be <strong>pinned</strong> by the post creator &mdash; these appear with a "Pinned" badge and are shown prominently.
+</div>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="saving-posts">Saving Posts</h2>
+
+<p>Save posts you want to revisit later by tapping the <strong>bookmark icon</strong> on any post card or post detail screen. Tap it again to unsave.</p>
+
+<p>You can find all your saved posts from your profile. See <a href="#saved-posts">Saved Posts</a> for more details.</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="shopping-from-posts">Shopping from Posts</h2>
+
+<p>Many posts on 66App include product links that let you shop the exact items shown in an outfit.</p>
+
+<ol>
+<li>Open a post that has product links &mdash; they appear below the caption in the <strong>"Affiliate links"</strong> section.</li>
+<li>Each link shows the product name and price (if available).</li>
+<li>Tap a link to open the product page in your browser.</li>
+</ol>
+
+<div class="callout info">
+<div class="callout-title">Tip</div>
+Shopping through product links on 66App supports the creators who styled the outfit. It's a great way to show your appreciation!
+</div>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="adding-product-links">For Creators: Adding Product Links</h2>
+
+<p>If you have a creator account, you can add affiliate product links to your posts so your followers can shop the items you feature.</p>
+
+<ol>
+<li>Open one of your own posts.</li>
+<li>Tap the three-dot menu and select <strong>Add affiliate link</strong>.</li>
+<li>Fill in the link details:
+  <ul>
+    <li><strong>Destination URL</strong> (required) &mdash; the product page link</li>
+    <li><strong>Product title</strong> &mdash; a name for the product</li>
+    <li><strong>Product image URL</strong> &mdash; a thumbnail of the product</li>
+    <li><strong>Price</strong> and <strong>Currency</strong> &mdash; e.g., 990 THB</li>
+  </ul>
+</li>
+<li>Tap <strong>Add link</strong> to save. The link will appear on your post immediately.</li>
+</ol>
+
+<p>You can add multiple product links to a single post.</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="creator-analytics">Creator Analytics Dashboard</h2>
+
+<p>As a creator, you have access to an analytics dashboard that shows how your product links are performing.</p>
+
+<ol>
+<li>Go to <strong>Settings</strong> (gear icon on your profile).</li>
+<li>Tap <strong>Creator Analytics</strong>.</li>
+</ol>
+
+<p>The dashboard shows you how many times your affiliate links have been clicked, helping you understand which products resonate with your audience.</p>
+
+<div class="callout info">
+<div class="callout-title">Tip</div>
+The Creator Analytics option only appears if you have a creator account. If you don't see it, contact support to upgrade your account.
+</div>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="viewing-your-profile">Viewing Your Profile</h2>
+
+<p>Tap the <strong>Profile</strong> tab to see your own profile. Your profile page includes:</p>
+
+<ul>
+<li>Your avatar, display name, and bio</li>
+<li>Your stats: number of posts, followers, and people you follow</li>
+<li>Quick-access buttons: <strong>Edit Profile</strong> and <strong>Saved</strong></li>
+<li>Your niche tags (if you've set any)</li>
+<li>Your level, XP progress, and streak information</li>
+<li>A grid of all your posts</li>
+</ul>
+
+<p>You can also view other people's profiles by tapping their name or avatar anywhere in the app.</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="editing-your-profile">Editing Your Profile</h2>
+
+<p>Personalise your profile to reflect your style.</p>
+
+<ol>
+<li>Go to your <strong>Profile</strong> tab and tap <strong>Edit Profile</strong>, or go to <strong>Settings</strong> and tap <strong>Edit Profile</strong>.</li>
+<li>Update any of the following fields:</li>
+</ol>
+
+<table>
+<tr><th>Field</th><th>Details</th></tr>
+<tr><td><strong>Display Name</strong></td><td>Your public name (required, up to 100 characters)</td></tr>
+<tr><td><strong>Handle</strong></td><td>Your unique @username (required, 3&ndash;30 characters, letters/numbers/underscores only)</td></tr>
+<tr><td><strong>Pronouns</strong></td><td>Choose from he/him, she/her, they/them, or enter custom pronouns</td></tr>
+<tr><td><strong>Bio</strong></td><td>Tell people about yourself (up to 500 characters)</td></tr>
+<tr><td><strong>Gender</strong></td><td>Male, Female, or Other</td></tr>
+<tr><td><strong>Links</strong></td><td>Add up to 5 website URLs to your profile</td></tr>
+<tr><td><strong>Profile Song</strong></td><td>Link a Spotify or Apple Music track to your profile</td></tr>
+</table>
+
+<p>Tap <strong>Save</strong> when you're done. Your changes will be visible to everyone immediately.</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="followers-following">Followers &amp; Following</h2>
+
+<p>From your profile (or anyone else's), tap the <strong>Followers</strong> or <strong>Following</strong> count to see the full list.</p>
+
+<p>Each entry shows the person's avatar, display name, and handle. Tap any entry to visit their profile.</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="saved-posts">Saved Posts</h2>
+
+<p>Access your bookmarked posts at any time:</p>
+
+<ol>
+<li>Go to your <strong>Profile</strong> tab.</li>
+<li>Tap the <strong>Saved</strong> button.</li>
+</ol>
+
+<p>You'll see a grid of all the posts you've saved. Tap any post to open it.</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="levels-xp">Levels &amp; XP</h2>
+
+<p>66App rewards you with experience points (XP) as you use the app. You earn XP by creating posts, engaging with content, and being active on the platform.</p>
+
+<ul>
+<li>Your current <strong>level</strong> and <strong>XP progress bar</strong> are displayed on your profile.</li>
+<li>The progress bar shows how much XP you need to reach the next level.</li>
+<li>Levelling up unlocks new achievements and recognition within the community.</li>
+</ul>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="streaks">Streaks</h2>
+
+<p>Keep your streak alive by opening 66App every day! Your streak counter is displayed on your profile with a flame icon.</p>
+
+<ul>
+<li>Each consecutive day you use the app adds one to your streak.</li>
+<li>If you miss a day, your streak resets to zero.</li>
+</ul>
+
+<div class="callout info">
+<div class="callout-title">Tip</div>
+Building a long streak can help you earn special achievements. Try to check in daily!
+</div>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="badges-achievements">Badges &amp; Achievements</h2>
+
+<p>Earn badges and achievements as you reach milestones on 66App.</p>
+
+<ol>
+<li>Go to <strong>Settings</strong> (gear icon on your profile).</li>
+<li>Tap <strong>Achievements</strong>.</li>
+</ol>
+
+<p>The achievements screen lists all available badges and shows which ones you've unlocked. Keep creating, engaging, and exploring to collect them all!</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="language-appearance">Language &amp; Appearance</h2>
+
+<h3>Language</h3>
+<p>66App supports English and Thai. To change your language:</p>
+<ol>
+<li>Go to <strong>Settings</strong> (gear icon on your profile).</li>
+<li>In the <strong>Language</strong> section, tap your preferred language.</li>
+</ol>
+
+<h3>Appearance</h3>
+<p>Choose how the app looks:</p>
+<ol>
+<li>Go to <strong>Settings</strong>.</li>
+<li>In the <strong>Appearance</strong> section, choose:
+  <ul>
+    <li><strong>Light</strong> &mdash; always light mode</li>
+    <li><strong>Dark</strong> &mdash; always dark mode</li>
+    <li><strong>System</strong> &mdash; follows your device setting</li>
+  </ul>
+</li>
+</ol>
+
+<p>Your choice is applied immediately.</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="account-information">Account Information</h2>
+
+<p>View your account details in Settings:</p>
+
+<ul>
+<li><strong>Email</strong> &mdash; the email address from your sign-in provider (read-only)</li>
+<li><strong>Account status</strong> &mdash; shows whether your account is active</li>
+</ul>
+
+<div class="callout info">
+<div class="callout-title">Tip</div>
+Your email is managed by the sign-in provider you used (Apple, Google, or LINE). To change it, update it with your provider directly.
+</div>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="deleting-your-account">Deleting Your Account</h2>
+
+<p>If you'd like to delete your 66App account:</p>
+
+<ol>
+<li>Go to <strong>Settings</strong>.</li>
+<li>Scroll down to the <strong>Danger Zone</strong> and tap <strong>Delete Account</strong>.</li>
+<li>Read the warning message carefully.</li>
+<li>Type <strong>DELETE</strong> (all uppercase, exactly as shown) in the confirmation field.</li>
+<li>Tap the <strong>Delete Account</strong> button to confirm.</li>
+</ol>
+
+<div class="callout warn">
+<div class="callout-title">Important</div>
+After you confirm, your account is scheduled for permanent deletion. You have a <strong>30-day grace period</strong> during which you can contact support to restore your account. After 30 days, all your data &mdash; posts, comments, likes, and profile information &mdash; will be permanently removed and cannot be recovered.
+</div>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="signing-out">Signing Out</h2>
+
+<p>To sign out of 66App:</p>
+
+<ol>
+<li>Go to <strong>Settings</strong>.</li>
+<li>Scroll to the bottom and tap the red <strong>Sign Out</strong> button.</li>
+</ol>
+
+<p>You'll be returned to the login screen. You can sign back in at any time using the same provider.</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="reporting-content">Reporting Content</h2>
+
+<p>If you see a post that violates community guidelines, you can report it:</p>
+
+<ol>
+<li>Open the post and tap the three-dot menu in the top-right corner.</li>
+<li>Select <strong>Report</strong>.</li>
+<li>Choose a reason:
+  <ul>
+    <li>Spam</li>
+    <li>Inappropriate content</li>
+    <li>Harassment</li>
+    <li>Other</li>
+  </ul>
+</li>
+<li>Tap <strong>Submit</strong>.</li>
+</ol>
+
+<p>Our team will review the report and take appropriate action. You'll see a confirmation message once your report has been submitted.</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2 id="blocking-users">Blocking Users</h2>
+
+<p>You can also report users directly from their profile page using the same reporting flow. If someone is bothering you, reporting them helps our moderation team keep the community safe.</p>
+
+<div class="callout info">
+<div class="callout-title">Tip</div>
+All reports are confidential. The reported user will not know who submitted the report.
+</div>
+
+</div><!-- /main-inner -->
+</div><!-- /main -->
+
+<!-- Back to top -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&#8593;</button>
+
+<script>
+// ── Sidebar toggle (mobile) ──
+const hamburger=document.getElementById('hamburger');
+const sidebar=document.getElementById('sidebar');
+const overlay=document.getElementById('overlay');
+function toggleSidebar(){sidebar.classList.toggle('open');overlay.classList.toggle('open')}
+hamburger.addEventListener('click',toggleSidebar);
+overlay.addEventListener('click',toggleSidebar);
+
+// Close sidebar on link click (mobile)
+sidebar.querySelectorAll('.nav-link').forEach(a=>{a.addEventListener('click',()=>{if(window.innerWidth<=900){sidebar.classList.remove('open');overlay.classList.remove('open')}})});
+
+// ── Collapsible nav groups ──
+document.querySelectorAll('.nav-group-title').forEach(t=>{t.addEventListener('click',()=>{t.parentElement.classList.toggle('open')})});
+
+// ── Scroll-spy ──
+const sections=document.querySelectorAll('h2[id]');
+const navLinks=document.querySelectorAll('.nav-link');
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){navLinks.forEach(l=>l.classList.remove('active'));const active=document.querySelector('.nav-link[href="#'+e.target.id+'"]');if(active)active.classList.add('active')}})},{rootMargin:'-80px 0px -70% 0px',threshold:0});
+sections.forEach(s=>observer.observe(s));
+
+// ── Back to top ──
+const btn=document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{btn.classList.toggle('visible',window.scrollY>400)});
+btn.addEventListener('click',()=>{window.scrollTo({top:0,behavior:'smooth'})});
+</script>
+</body>
+</html>
